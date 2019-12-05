@@ -1,10 +1,11 @@
 from room import Room
+from player import Player
 
 # Declare all the rooms
 
 room = {
     'outside':  Room("Outside Cave Entrance",
-                     "North of you, the cave mount beckons"),
+ "North of you, the cave mount beckons"),
 
     'foyer':    Room("Foyer", """Dim light filters in from the south. Dusty
 passages run north and east."""),
@@ -20,7 +21,6 @@ to north. The smell of gold permeates the air."""),
 chamber! Sadly, it has already been completely emptied by
 earlier adventurers. The only exit is to the south."""),
 }
-
 
 # Link rooms together
 
@@ -49,3 +49,78 @@ room['treasure'].s_to = room['narrow']
 # Print an error message if the movement isn't allowed.
 #
 # If the user enters "q", quit the game.
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKGREEN = '\033[92m'
+    FAIL = '\033[91m'
+    BOLD = '\033[1m'
+    ITALIC = '\033[3m'
+    ENDC = '\033[0m'
+
+def app4():
+    # Welcome message
+    print(bcolors.OKGREEN + bcolors.BOLD + "Welcome to your new adventure!" + bcolors.ENDC + bcolors.ENDC)
+
+    # Set current room to outside
+    current_room = room.get("outside")
+
+    # Instantiate user
+    player = Player(current_room)
+
+    # Greet player
+    player.welcome_player()
+    player.print_current_room()
+
+    # Prompt player to make a input choice
+    print("")
+    print("What direction do you travel? North[n] Quit[q]")
+    direction = input(">>> ")
+    
+    while not direction == 'q':
+        # Print current room according to Player class
+        # player.print_current_room()
+        # Print current room according to Room class
+        # print(current_room.name + "!")
+
+        # If player enters 'n'
+
+        if direction == 'n':
+            # If player is currently in "outside"
+            if player.current_room == room.get("outside"):
+                player.current_room = room.get("foyer")
+            elif player.current_room == room.get("narrow"):
+                player.current_room = room.get("treasure")
+            elif player.current_room == room.get("foyer"):
+                player.current_room = room.get("overlook")
+
+        elif direction == 's':
+            if player.current_room == room.get("foyer"):
+                player.current_room = room.get("outside")
+            elif player.current_room == room.get("overlook"):
+                player.current_room = room.get("foyer")
+            elif player.current_room == room.get("treasure"):
+                player.current_room = room.get("narrow")
+
+        elif direction == 'e':
+            if player.current_room == room.get("foyer"):
+                player.current_room = room.get("narrow")
+
+        elif direction == 'w':
+            if player.current_room == room.get("narrow"):
+                player.current_room = room.get("foyer")
+        else:
+            print("")
+            print("Invalid command")
+        
+        # Print current room according to Player class
+        player.print_current_room()
+
+        print("")
+        print("Choose another direction:")
+        direction = input(">>> ")
+    
+    print("")
+    print("Thank you for playing!")
+
+app4()
