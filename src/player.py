@@ -6,10 +6,8 @@ class Player:
         self.name = input("What is your name? ")
         self.current_room = current_room
     
-    def change_room(self, current_room):
-        self.current_room = current_room
-
     def welcome_player(self):
+        print("")
         print(f"Welcome {self.name}...")
 
     def print_current_room(self):

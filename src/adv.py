@@ -58,14 +58,17 @@ class bcolors:
     ITALIC = '\033[3m'
     ENDC = '\033[0m'
 
-def app4():
+def app():
     # Welcome message
+    print("")
     print(bcolors.OKGREEN + bcolors.BOLD + "Welcome to your new adventure!" + bcolors.ENDC + bcolors.ENDC)
+    print("")
 
     # Set current room to outside
     current_room = room.get("outside")
 
     # Instantiate user
+    print("")
     player = Player(current_room)
 
     # Greet player
@@ -74,7 +77,7 @@ def app4():
 
     # Prompt player to make a input choice
     print("")
-    print("What direction do you travel? North[n] Quit[q]")
+    print("What direction do you travel? \n[n] north  \n[q] quit")
     direction = input(">>> ")
     
     while not direction == 'q':
@@ -111,10 +114,24 @@ def app4():
                 player.current_room = room.get("foyer")
         else:
             print("")
-            print("Invalid command")
+            print(bcolors.FAIL + "Invalid command" + bcolors.ENDC)
         
         # Print current room according to Player class
         player.print_current_room()
+
+        options = {}
+        if player.current_room.n_to != None:
+            options.update({ "n": player.current_room.n_to.name })
+        if player.current_room.s_to != None:
+            options.update({ "s": player.current_room.s_to.name })
+        if player.current_room.e_to != None:
+            options.update({ "e": player.current_room.e_to.name })
+        if player.current_room.w_to != None:
+            options.update({ "w": player.current_room.w_to.name })
+
+        print("")
+        for i in options:
+            print(f"[{i}] {options[i]}")
 
         print("")
         print("Choose another direction:")
@@ -123,4 +140,4 @@ def app4():
     print("")
     print("Thank you for playing!")
 
-app4()
+app()

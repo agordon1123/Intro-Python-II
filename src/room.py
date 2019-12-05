@@ -10,7 +10,5 @@ class Room:
         self.e_to = None
         self.w_to = None
 
-    def __str__(self):
-        print(f"You are currently {self.name}")
-        print(f"{self.description}")
-        print(f"n: {self.n_to}, s: {self.s_to}, e: {self.e_to}, w: {self.w_to}")
+    def print_name(self):
+        print(f"{self.name}")
