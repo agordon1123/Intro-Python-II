@@ -59,6 +59,10 @@ class bcolors:
     ENDC = '\033[0m'
 
 def app():
+    # bring app to top of terminal screen
+    import os
+    os.system('cls' if os.name == 'nt' else 'clear')
+
     # welcome message
     print("")
     print("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
