@@ -101,8 +101,7 @@ def app():
     player.print_current_room()
 
     # prompt player to make a input choice
-    print("")
-    print("cmds:")
+    print("\ncmds:")
     print("[n] Enter Cave \n[q] Quit\n")
     print("What do you do?")
     direction = input(">>> ").lower().split()
@@ -121,13 +120,22 @@ def app():
                 if player.current_room.s_to != None:
                     player.current_room = player.current_room.s_to
 
-            elif direction[0] == 'e': #east
+            elif direction[0] == 'e': # east
                 if player.current_room.e_to != None:
                     player.current_room = player.current_room.e_to
 
-            elif direction[0] == 'w': #west
+            elif direction[0] == 'w': # west
                 if player.current_room.w_to != None:
                     player.current_room = player.current_room.w_to
+            
+            elif direction[0] == 'i' or direction[0] == 'inventory': # inventory
+                print("\nYour inventory: ")
+                # check for items
+                if len(player.items):
+                    for val in player.items:
+                        print(f"1 {val.name}")
+                else:
+                    print("no items")
 
             else: #invalid entry
                 print("")
@@ -137,7 +145,7 @@ def app():
             # item interaction
             verb = direction[0]
             noun = direction[1]
-            if verb == 'grab':
+            if verb == 'grab' or verb == 'take':
                 for item in player.current_room.items:
                     if item.name == noun:
                         player.items.append(item)
@@ -172,10 +180,10 @@ def app():
             options.update({ "e": player.current_room.e_to.name })
         if player.current_room.w_to != None:
             options.update({ "w": player.current_room.w_to.name })
+        options.update({ "i": "Inventory" })
         options.update({ "q": "Quit" })
 
-        print("")
-        print("This area contains: ")
+        print("\nThis area contains: ")
         # check for items
         if len(player.current_room.items):
             for val in player.current_room.items:
@@ -184,8 +192,7 @@ def app():
         else:
             print("no items")
 
-        print("")
-        print("Your inventory: ")
+        print("\nYour inventory: ")
         # check for items
         if len(player.items):
             for val in player.items:
@@ -194,16 +201,14 @@ def app():
             print("no items")
 
         # print available options
-        print("")
-        print("cmds:")
+        print("\ncmds:")
         for i in options:
             print(f"[{i}] Go to {options[i]}")
-        print("[grab <item>]")
+        print("[grab/take <item>]")
         print("[drop <item>]")
 
         # prompt next input
-        print("")
-        print("What do you do? ")
+        print("\nWhat do you do? ")
         direction = input(">>> ").lower().split()
         print(direction)
     
