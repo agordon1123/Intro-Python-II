@@ -13,6 +13,7 @@ class Player:
     def __init__(self, current_room):
         self.name = input("What is your name? ")
         self.current_room = current_room
+        self.items = []
     
     def welcome_player(self):
         print("")

@@ -1,25 +1,25 @@
 from room import Room
 from player import Player
+from item import Item
 
 # Declare all the rooms
 
 room = {
-    'outside':  Room("Outside Cave Entrance", """North of you, the cave mount reflects the light of the 
-full moon hidden behind the hazy night sky."""),
+    'outside':  Room("Outside Cave Entrance", """North of you, the cave mount reflects the light of the full moon hidden
+behind the hazy night sky."""),
 
-    'foyer':    Room("Foyer", """Dim light filters in from the south. Dusty passages 
-run north and east."""),
+    'foyer':    Room("Foyer", """Dim light filters in from the south. Dusty passages run north and east."""),
 
-    'overlook': Room("Grand Overlook", """A steep cliff appears before you, falling
-into the darkness. Ahead to the north, a light flickers in
-the distance, but there is no way across the chasm."""),
+    'overlook': Room("Grand Overlook", """A steep cliff appears before you, falling into the darkness. Ahead to 
+the north, a light flickers in the distance, but there is no way across the 
+chasm."""),
 
-    'narrow':   Room("Narrow Passage", """The narrow passage bends here from west
-to north. The smell of gold permeates the air."""),
+    'narrow':   Room("Narrow Passage", """The narrow passage bends here from west to north. The smell of gold 
+permeates the air."""),
 
-    'treasure': Room("Treasure Chamber", """You've found the long-lost treasure
-chamber! Sadly, it has already been completely emptied by
-earlier adventurers. The only exit is to the south."""),
+    'treasure': Room("Treasure Chamber", """You've found the long-lost treasure chamber! Sadly, it has already
+been completely emptied by earlier adventurers. The only exit is to the 
+south."""),
 }
 
 # Link rooms together
@@ -32,6 +32,12 @@ room['overlook'].s_to = room['foyer']
 room['narrow'].w_to = room['foyer']
 room['narrow'].n_to = room['treasure']
 room['treasure'].s_to = room['narrow']
+
+# Add items to rooms
+room['foyer'].items.append(Item('sword', 'the reforged sword from the shards of Narsil. Andúril, also called the Flame of the West...'))
+room['foyer'].items.append(Item('shield', 'a shield with very little remaining for it was used by Eowyn, the shield-maiden, against the wraith...'))
+room['overlook'].items.append(Item('dagger', 'a magical Elvish dagger presumably forged in Gondolin in the First Age...'))
+room['treasure'].items.append(Item('staff', 'more or less a walking stick with a place to hold a smoking pipe...'))
 
 #
 # Main
@@ -91,47 +97,76 @@ def app():
     # greet player
     player.welcome_player()
     print("")
-    print("- - -")
+    print("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
     player.print_current_room()
 
     # prompt player to make a input choice
-    print("")
-    print("What direction do you travel? \n[n] Foyer  \n[q] Quit")
-    direction = input(">>> ")
+    print("\ncmds:")
+    print("[n] Enter Cave \n[q] Quit\n")
+    print("What do you do?")
+    direction = input(">>> ").lower().split()
     
-    while not direction == 'q': # Game loop
-        
-        if direction == 'n': # north
-            # set next room
-            if player.current_room == room.get("outside"):
-                player.current_room = room.get("foyer")
-            elif player.current_room == room.get("narrow"):
-                player.current_room = room.get("treasure")
-            elif player.current_room == room.get("foyer"):
-                player.current_room = room.get("overlook")
+    while not direction[0] == 'q': # Game loop
+        # bring app to top of terminal screen
+        os.system('cls' if os.name == 'nt' else 'clear')
 
-        elif direction == 's': # south
-            if player.current_room == room.get("foyer"):
-                player.current_room = room.get("outside")
-            elif player.current_room == room.get("overlook"):
-                player.current_room = room.get("foyer")
-            elif player.current_room == room.get("treasure"):
-                player.current_room = room.get("narrow")
+        if len(direction) == 1:
+            if direction[0] == 'n': # north
+                # set next room
+                if player.current_room.n_to != None:
+                    player.current_room = player.current_room.n_to
 
-        elif direction == 'e': #east
-            if player.current_room == room.get("foyer"):
-                player.current_room = room.get("narrow")
+            elif direction[0] == 's': # south
+                if player.current_room.s_to != None:
+                    player.current_room = player.current_room.s_to
 
-        elif direction == 'w': #west
-            if player.current_room == room.get("narrow"):
-                player.current_room = room.get("foyer")
-        else: #invalid entry
+            elif direction[0] == 'e': # east
+                if player.current_room.e_to != None:
+                    player.current_room = player.current_room.e_to
+
+            elif direction[0] == 'w': # west
+                if player.current_room.w_to != None:
+                    player.current_room = player.current_room.w_to
+            
+            elif direction[0] == 'i' or direction[0] == 'inventory': # inventory
+                print("\nYour inventory: ")
+                # check for items
+                if len(player.items):
+                    for val in player.items:
+                        print(f"1 {val.name}")
+                else:
+                    print("no items")
+
+            else: #invalid entry
+                print("")
+                print(bcolors.FAIL + "Invalid command" + bcolors.ENDC)
+
+        elif len(direction) == 2:
+            # item interaction
+            verb = direction[0]
+            noun = direction[1]
+            if verb == 'grab' or verb == 'take':
+                for item in player.current_room.items:
+                    if item.name == noun:
+                        player.items.append(item)
+                        player.current_room.items.remove(item)
+                        item.on_take()
+            elif verb == 'drop':
+                for item in player.items:
+                    if item.name == noun:
+                        player.items.remove(item)
+                        player.current_room.items.append(item)
+                        item.on_drop()
+            else:
+                print("")
+                print(bcolors.FAIL + "Invalid command" + bcolors.ENDC)
+        else:
             print("")
             print(bcolors.FAIL + "Invalid command" + bcolors.ENDC)
-        
-        # print current room according to Player instance
+
+        # print current room
         print("")
-        print("- - -")
+        print("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
         player.print_current_room()
 
         options = {}
@@ -145,17 +180,37 @@ def app():
             options.update({ "e": player.current_room.e_to.name })
         if player.current_room.w_to != None:
             options.update({ "w": player.current_room.w_to.name })
+        options.update({ "i": "Inventory" })
         options.update({ "q": "Quit" })
 
+        print("\nThis area contains: ")
+        # check for items
+        if len(player.current_room.items):
+            for val in player.current_room.items:
+                # TODO does not account for multiple of the same item
+                print(f"1 {val.name}: {val.description}")
+        else:
+            print("no items")
+
+        print("\nYour inventory: ")
+        # check for items
+        if len(player.items):
+            for val in player.items:
+                print(f"1 {val.name}")
+        else:
+            print("no items")
+
         # print available options
-        print("")
+        print("\ncmds:")
         for i in options:
-            print(f"[{i}] {options[i]}")
+            print(f"[{i}] Go to {options[i]}")
+        print("[grab/take <item>]")
+        print("[drop <item>]")
 
         # prompt next input
-        print("")
-        print("Choose another direction:")
-        direction = input(">>> ")
+        print("\nWhat do you do? ")
+        direction = input(">>> ").lower().split()
+        print(direction)
     
     print("")
     print("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
